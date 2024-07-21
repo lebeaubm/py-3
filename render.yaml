@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: django-ecommerce
+    env: python
+    plan: free
+    rootDir: ecommerce
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate"
+    startCommand: "gunicorn ecommerce.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: ecommerce.settings
+      - key: SECRET_KEY
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
+
