@@ -1,11 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import login, authenticate
-from .forms import UserRegistrationForm
-
-from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from .models import Product, Cart, CartItem, Order, OrderItem
-from .models import Profile
 
 def index(request):
     return render(request, 'store/index.html')
@@ -82,16 +80,7 @@ def add_to_cart(request, product_id):
 
 @login_required
 def profile(request):
-    if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=request.user)
-        profile_form = ProfileForm(request.POST, instance=request.user.profile)
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            return redirect('profile')
-    else:
-        user_form = UserForm(instance=request.user)
-        profile_form = ProfileForm(instance=request.user.profile)
-    return render(request, 'store/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    return render(request, 'store/profile.html', {'cart': cart})
 
 
